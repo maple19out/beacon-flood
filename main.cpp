@@ -34,12 +34,11 @@ bool parse(Param* param, int argc, char* argv[]) {
 }
 
 void extract_ssid_list(list<string>& ssidList) {
-    FILE* fp = fopen(param.ssid_list_, "r");
+    FILE* fp = fopen(param.ssid_list_, "rt");
 
     char buf[256];
     while (fgets(buf, 256, fp)) {
-        buf[strlen(buf) - 1] = '\0';
-
+        buf[strlen(buf)-1] = '\0';
         string ssid(buf);
         ssidList.push_back(ssid);
     }
@@ -62,19 +61,19 @@ int main(int argc, char* argv[]) {
     extract_ssid_list(ssidList);
 
     Frame frame;
-    memset(frame.buf, 0, sizeof(frame.buf));
     frame.size = 0;
-    frame.set_radiotap_header(12);
+    frame.set_radiotap_header();
     frame.set_beaconframe();
 
-    /* To Do */
+    /* To do */
     int prev_size = frame.size;
     while (true) {
-        for(list<string>::iterator it = ssidList.begin(); it != ssidList.end(); it++) {
+        for(auto it = ssidList.begin(); it != ssidList.end(); it++) {
             frame.size = prev_size;
             frame.set_ssid((*it));
+            frame.randomize_bssid();
             printf("sending [%s] beacon frame...\n", (*it).c_str());
-            pcap_sendpacket(pcap, frame.buf, frame.size);
+            pcap_sendpacket(pcap, (const u_char*)(&frame), frame.size);
         }
         usleep(5000);
     }

@@ -3,13 +3,16 @@
 #ifndef WIRELESS_H
 #define WIRELESS_H
 
+#pragma pack(push, 1)
 struct ieee80211_radiotap_header {
-    uint8_t it_versoin;
+    uint8_t it_version;
     uint8_t it_pad;
-    uint8_t it_len;
+    uint16_t it_len;
     uint32_t it_present;
 };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
 struct ieee80211_beacon_frame_header {
     uint16_t frame_control;
     uint16_t duration;
@@ -18,12 +21,14 @@ struct ieee80211_beacon_frame_header {
     uint8_t BSS_ID[6];
     uint16_t seq_ctl;
 };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
 struct ieee80211_beacon_frame_body {
     uint64_t Timestamp;
     uint16_t Beacon_interval;
     uint16_t Capability_Info;
-    uint8_t Tag_Number[1];
 };
+#pragma pack(pop)
 
 #endif // WIRELESS_H
